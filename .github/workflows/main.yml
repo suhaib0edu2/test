@@ -41,3 +41,9 @@ jobs:
 
       - name: Open Firewall for Remote Desktop
         run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+      - name: Keep Session Active
+        run: |
+          Write-Host "Press Ctrl+C to terminate..."
+          Start-Sleep -Seconds 86400
+
