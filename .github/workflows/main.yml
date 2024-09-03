@@ -10,29 +10,60 @@ jobs:
       - name: Install Chrome
         run: |
           $Path = "$env:TEMP\chrome_installer.exe"
+          Write-Output "Downloading Google Chrome..."
           Invoke-WebRequest -Uri "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $Path
+          Write-Output "Installing Google Chrome..."
           Start-Process -FilePath $Path -ArgumentList "/silent /install" -Wait
+          if (!(Get-Command "chrome.exe" -ErrorAction SilentlyContinue)) {
+            Write-Error "Chrome installation failed."
+            exit 1
+          }
+          Write-Output "Google Chrome installed successfully."
 
       - name: Download Chrome Remote Desktop
         run: |
           $Path = "$env:TEMP\chromeremotedesktop.msi"
+          Write-Output "Downloading Chrome Remote Desktop..."
           Invoke-WebRequest -Uri "https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb" -OutFile $Path
+          Write-Output "Installing Chrome Remote Desktop..."
           Start-Process -FilePath msiexec.exe -ArgumentList "/i", $Path, "/quiet", "/norestart" -Wait
+          if (!(Test-Path "C:\Program Files (x86)\Google\Chrome Remote Desktop")) {
+            Write-Error "Chrome Remote Desktop installation failed."
+            exit 1
+          }
+          Write-Output "Chrome Remote Desktop installed successfully."
 
       - name: Enable Remote Desktop
-        run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
-      
-      - name: Verify Chrome Remote Desktop installation
-        run: dir "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion"
+        run: |
+          Write-Output "Enabling Remote Desktop..."
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+          Write-Output "Remote Desktop enabled."
+
+      - name: Verify Chrome Remote Desktop Installation
+        run: |
+          Write-Output "Verifying Chrome Remote Desktop installation..."
+          if (!(Test-Path "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion")) {
+            Write-Error "Chrome Remote Desktop installation not found. Verification failed."
+            exit 1
+          }
+          Write-Output "Chrome Remote Desktop installation verified successfully."
 
       - name: Configure Chrome Remote Desktop
         run: |
+          Write-Output "Configuring Chrome Remote Desktop..."
           & "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="$Env:CRD_AUTH_CODE" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name="GitHubActionsVM"
+          Write-Output "Chrome Remote Desktop configured."
         env:
           CRD_AUTH_CODE: ${{ secrets.CRD_AUTH_CODE }}
 
       - name: Set Local User Password
-        run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+        run: |
+          Write-Output "Setting local user password..."
+          Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+          Write-Output "Local user password set."
 
       - name: Open Firewall for Remote Desktop
-        run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        run: |
+          Write-Output "Opening firewall for Remote Desktop..."
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Write-Output "Firewall configured for Remote Desktop."
