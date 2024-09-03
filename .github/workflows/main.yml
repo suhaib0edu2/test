@@ -24,7 +24,7 @@ jobs:
 
       - name: Configure Chrome Remote Desktop
         run: |
-          & "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\chrome-remote-desktop-host.exe" --code="$Env:CRD_AUTH_CODE" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name="GitHubActionsVM"
+          & "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="$Env:CRD_AUTH_CODE" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name="GitHubActionsVM"
         env:
           CRD_AUTH_CODE: ${{ secrets.CRD_AUTH_CODE }}
 
