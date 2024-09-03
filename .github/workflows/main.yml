@@ -14,10 +14,10 @@ jobs:
       - name: Install Chrome using Chocolatey
         run: choco install googlechrome -y
 
-      - name: Download Chrome Remote Desktop
+      - name: Download and Install Chrome Remote Desktop
         run: |
-          $Path = "$env:TEMP\chromeremotedesktop.msi"
-          Invoke-WebRequest -Uri "https://dl.google.com/chrome-remote-desktop/windows.msi" -OutFile $Path
+          $Path = "$env:TEMP\chromeremotedesktophost.msi"
+          Invoke-WebRequest -Uri "https://dl.google.com/edgedl/chrome-remote-desktop/chromeremotedesktophost.msi" -OutFile $Path
           Start-Process -FilePath msiexec.exe -ArgumentList "/i", $Path, "/quiet", "/norestart" -Wait
           if (!(Test-Path "C:\Program Files (x86)\Google\Chrome Remote Desktop")) {
             Write-Error "Chrome Remote Desktop installation failed."
@@ -26,6 +26,9 @@ jobs:
 
       - name: Enable Remote Desktop
         run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+
+      - name: Verify Chrome Remote Desktop Installation
+        run: dir "C:\Program Files (x86)\Google\Chrome Remote Desktop"
 
       - name: Configure Chrome Remote Desktop
         run: |
