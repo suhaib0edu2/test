@@ -21,6 +21,9 @@ jobs:
 
       - name: Enable Remote Desktop
         run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+      
+      - name: Verify Chrome Remote Desktop installation
+        run: dir "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion"
 
       - name: Configure Chrome Remote Desktop
         run: |
