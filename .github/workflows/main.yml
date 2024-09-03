@@ -10,21 +10,14 @@ jobs:
       - name: Install Chocolatey
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-        continue-on-error: true
 
       - name: Install Chrome using Chocolatey
-        run: |
-          choco install googlechrome -y
-          if (!(Get-Command "chrome.exe" -ErrorAction SilentlyContinue)) {
-            Write-Error "Chrome installation failed."
-            exit 1
-          }
-        continue-on-error: true
+        run: choco install googlechrome -y
 
       - name: Download Chrome Remote Desktop
         run: |
           $Path = "$env:TEMP\chromeremotedesktop.msi"
-          Invoke-WebRequest -Uri "https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb" -OutFile $Path
+          Invoke-WebRequest -Uri "https://dl.google.com/chrome-remote-desktop/windows.msi" -OutFile $Path
           Start-Process -FilePath msiexec.exe -ArgumentList "/i", $Path, "/quiet", "/norestart" -Wait
           if (!(Test-Path "C:\Program Files (x86)\Google\Chrome Remote Desktop")) {
             Write-Error "Chrome Remote Desktop installation failed."
@@ -33,13 +26,6 @@ jobs:
 
       - name: Enable Remote Desktop
         run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
-
-      - name: Verify Chrome Remote Desktop Installation
-        run: |
-          if (!(Test-Path "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion")) {
-            Write-Error "Chrome Remote Desktop installation not found. Verification failed."
-            exit 1
-          }
 
       - name: Configure Chrome Remote Desktop
         run: |
