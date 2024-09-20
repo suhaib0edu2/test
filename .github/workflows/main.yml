@@ -24,9 +24,9 @@ jobs:
         sudo systemctl start xrdp
     - name: Configure User
       run: |
-        sudo adduser --gecos "" suhaib
+        sudo adduser --gecos "" --disabled-password suhaib
         echo "suhaib:123456" | sudo chpasswd
-        sudo usermod -aG ssl-cert suhaib
+        sudo usermod -aG sudo,ssl-cert suhaib
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
     - name: Create Tunnel
