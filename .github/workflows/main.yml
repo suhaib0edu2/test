@@ -32,4 +32,7 @@ jobs:
       run: sudo ufw allow 3389/tcp
 
     - name: Start LocalTunnel
-      run: lt --port 3389
+      run: |
+        lt --port 3389 --subdomain my-subdomain --print-requests &
+        sleep 10  # تأخير قصير لإعطاء الوقت لبدء النفق
+        curl https://loca.lt/mytunnelpassword  # الحصول على كلمة المرور
