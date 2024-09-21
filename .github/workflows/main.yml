@@ -4,42 +4,30 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install PageKite
+    - name: Download
+      run: curl -Lo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
+    - name: Extract
+      run: unzip ngrok.zip
+    - name: Auth
+      run: ./ngrok authtoken $NGROK_AUTH_TOKEN
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Install XRDP
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip
-        pip3 install pagekite
-
-    - name: Install XRDP and XFCE
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y xrdp xfce4 xfce4-terminal
+        sudo apt-get install -y xrdp
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
-
     - name: Configure User
       run: |
         sudo adduser --gecos "" --disabled-password suhaib
         echo "suhaib:123456" | sudo chpasswd
         sudo usermod -aG sudo,ssl-cert suhaib
-
-    - name: Configure XRDP
-      run: |
-        echo "xfce4-session" | sudo tee /home/suhaib/.xsession
-        sudo chown suhaib:suhaib /home/suhaib/.xsession
-        sudo systemctl restart xrdp
-
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
-
-    - name: Check XRDP Status
-      run: sudo systemctl status xrdp
-    
-    - name: Start PageKite
-      run: pagekite 3389 yoursubdomain.pagekite.me
-
-    - name: Get Tunnel URL
-      run: echo "Your tunnel URL is: https://yoursubdomain.pagekite.me"
+    - name: Create Tunnel
+      run: ./ngrok tcp 3389
