@@ -16,17 +16,19 @@ jobs:
       run: ./ngrok authtoken $NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Install VNC Server
+    - name: Install NoMachine
       run: |
         sudo apt-get update
-        sudo apt-get install -y tightvncserver
-        # يمكنك هنا إعداد VNC حسب تفضيلاتك، مثل تعيين دقة الشاشة
+        sudo apt-get install -y wget
+        wget -O nomachine.deb https://download.nomachine.com/download/7.9/Linux/nomachine_7.9.2_1_amd64.deb
+        sudo dpkg -i nomachine.deb
+        sudo apt-get install -f  # لتثبيت أي تبعيات مفقودة
     - name: Configure User
       run: |
         sudo adduser --gecos "" --disabled-password suhaib
         echo "suhaib:123456" | sudo chpasswd
         sudo usermod -aG sudo suhaib
     - name: Configure Firewall
-      run: sudo ufw allow 5901/tcp
+      run: sudo ufw allow 4000/tcp
     - name: Create Tunnel
-      run: ./ngrok tcp 5901
+      run: ./ngrok tcp 4000
