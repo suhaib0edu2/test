@@ -33,5 +33,11 @@ jobs:
         sudo systemctl restart xrdp
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
-    - name: Create Tunnel
-      run: ./ngrok tcp 3389
+    - name: Create ngrok config
+      run: |
+        mkdir -p ~/.ngrok2
+        echo "tunnels:" >> ~/.ngrok2/ngrok.yml
+        echo "  rdp:" >> ~/.ngrok2/ngrok.yml
+        echo "    addr: 3389" >> ~/.ngrok2/ngrok.yml
+    - name: Start ngrok
+      run: ./ngrok start --all --config ~/.ngrok2/ngrok.yml
