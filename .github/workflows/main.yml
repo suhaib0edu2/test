@@ -32,9 +32,20 @@ jobs:
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
 
+    - name: Check XRDP Status
+      run: sudo systemctl status xrdp
+    
     - name: Get and Print Tunnel Password Page
       run: |
+        echo "Your IP Address is:"
+        curl -s https://ipinfo.io/ip
+        echo "Tunnel Password Page:"
         curl -s https://loca.lt/mytunnelpassword
-
+        
     - name: Start LocalTunnel
-      run: lt --port 3389
+      run: lt --port 3389 --subdomain mytunnel
+
+    - name: Get Tunnel URL
+      run: |
+        sleep 5  # انتظر حتى يبدأ LocalTunnel
+        curl -s https://loca.lt/mytunnelpassword || echo "Tunnel URL not available yet"
