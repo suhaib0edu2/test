@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install Node.js
+      run: sudo apt-get install -y nodejs npm
+
     - name: Install LocalTunnel
       run: npm install -g localtunnel
 
@@ -33,6 +36,10 @@ jobs:
 
     - name: Start LocalTunnel
       run: |
-        lt --port 3389 --subdomain my-subdomain --print-requests &
-        sleep 10  # تأخير قصير لإعطاء الوقت لبدء النفق
-        curl https://loca.lt/mytunnelpassword  # الحصول على كلمة المرور
+        lt --port 3389 --subdomain my-subdomain --print-requests > lt.log 2>&1 &
+        sleep 5  # تأخير لإعطاء الوقت لبدء النفق
+
+    - name: Get Tunnel Password
+      run: |
+        PASSWORD=$(curl -s https://loca.lt/mytunnelpassword)
+        echo "Tunnel Password: $PASSWORD"
