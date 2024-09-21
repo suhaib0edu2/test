@@ -7,8 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install LocalTunnel
-      run: npm install -g localtunnel
+    - name: Install PageKite
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+        pip3 install pagekite
 
     - name: Install XRDP and XFCE
       run: |
@@ -35,17 +38,8 @@ jobs:
     - name: Check XRDP Status
       run: sudo systemctl status xrdp
     
-    - name: Get and Print Tunnel Password Page
-      run: |
-        echo "Your IP Address is:"
-        curl -s https://ipinfo.io/ip
-        echo "Tunnel Password Page:"
-        curl -s https://loca.lt/mytunnelpassword
-        
-    - name: Start LocalTunnel
-      run: lt --port 3389 --subdomain mytunnel
+    - name: Start PageKite
+      run: pagekite 3389 yoursubdomain.pagekite.me
 
     - name: Get Tunnel URL
-      run: |
-        sleep 5  # انتظر حتى يبدأ LocalTunnel
-        curl -s https://loca.lt/mytunnelpassword || echo "Tunnel URL not available yet"
+      run: echo "Your tunnel URL is: https://yoursubdomain.pagekite.me"
