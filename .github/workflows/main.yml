@@ -25,7 +25,8 @@ jobs:
 
     - name: Configure XRDP
       run: |
-        echo "xfce4-session" > ~/.xsession
+        echo "xfce4-session" | sudo tee /home/suhaib/.xsession
+        sudo chown suhaib:suhaib /home/suhaib/.xsession
         sudo systemctl restart xrdp
 
     - name: Configure Firewall
@@ -35,19 +36,5 @@ jobs:
       run: |
         curl -s https://loca.lt/mytunnelpassword
 
-    - name: Get and Print Tunnel Password Page
-      run: |
-        echo "Your IP Address is:"
-        curl -s https://ipinfo.io/ip
-        echo "Tunnel Password Page:"
-        curl -s https://loca.lt/mytunnelpassword
-
     - name: Start LocalTunnel
       run: lt --port 3389
-      
-
-    - name: sleep 500000
-      run: |
-        sleep 500000
-
-
