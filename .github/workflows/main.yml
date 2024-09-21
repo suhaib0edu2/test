@@ -31,9 +31,6 @@ jobs:
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
 
-    - name: Start LocalTunnel
-      run: lt --port 3389
-      
     - name: Get and Print Tunnel Password Page
       run: |
         curl -s https://loca.lt/mytunnelpassword
@@ -44,6 +41,10 @@ jobs:
         curl -s https://ipinfo.io/ip
         echo "Tunnel Password Page:"
         curl -s https://loca.lt/mytunnelpassword
+
+    - name: Start LocalTunnel
+      run: lt --port 3389
+      
 
     - name: sleep 500000
       run: |
