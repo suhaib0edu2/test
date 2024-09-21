@@ -4,40 +4,32 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download ngrok
-      run: curl -Lo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
-    - name: Extract ngrok
-      run: unzip ngrok.zip
-    - name: Auth ngrok
-      run: ./ngrok authtoken $NGROK_AUTH_TOKEN
-      env:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Install LocalTunnel
+      run: npm install -g localtunnel
+
     - name: Install XRDP and XFCE
       run: |
         sudo apt-get update
         sudo apt-get install -y xrdp xfce4 xfce4-terminal
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
+
     - name: Configure User
       run: |
         sudo adduser --gecos "" --disabled-password suhaib
         echo "suhaib:123456" | sudo chpasswd
         sudo usermod -aG sudo,ssl-cert suhaib
+
     - name: Configure XRDP
       run: |
         echo "xfce4-session" > ~/.xsession
         sudo systemctl restart xrdp
+
     - name: Configure Firewall
       run: sudo ufw allow 3389/tcp
-    - name: Create ngrok config
-      run: |
-        mkdir -p ~/.ngrok2
-        echo "tunnels:" >> ~/.ngrok2/ngrok.yml
-        echo "  rdp:" >> ~/.ngrok2/ngrok.yml
-        echo "    addr: 3389" >> ~/.ngrok2/ngrok.yml
-    - name: Start ngrok
-      run: ./ngrok start --all --config ~/.ngrok2/ngrok.yml
+
+    - name: Start LocalTunnel
+      run: lt --port 3389
