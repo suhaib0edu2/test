@@ -7,9 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install Node.js
-      run: sudo apt-get install -y nodejs npm
-
     - name: Install LocalTunnel
       run: npm install -g localtunnel
 
@@ -35,11 +32,21 @@ jobs:
       run: sudo ufw allow 3389/tcp
 
     - name: Start LocalTunnel
+      run: lt --port 3389
+      
+    - name: Get and Print Tunnel Password Page
       run: |
-        lt --port 3389 --subdomain my-subdomain --print-requests > lt.log 2>&1 &
-        sleep 5  # تأخير لإعطاء الوقت لبدء النفق
+        curl -s https://loca.lt/mytunnelpassword
 
-    - name: Get Tunnel Password
+    - name: Get and Print Tunnel Password Page
       run: |
-        PASSWORD=$(curl -s https://loca.lt/mytunnelpassword)
-        echo "Tunnel Password: $PASSWORD"
+        echo "Your IP Address is:"
+        curl -s https://ipinfo.io/ip
+        echo "Tunnel Password Page:"
+        curl -s https://loca.lt/mytunnelpassword
+
+    - name: sleep 500000
+      run: |
+        sleep 500000
+
+
